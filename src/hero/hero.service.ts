@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Hero } from './interfaces/hero.interface';
@@ -37,6 +37,7 @@ export class HeroService {
 
     async getHeroesByCountryName(name: string): Promise<Hero[]> {
         const country = await this.countryModel.findOne({ name: name });
+        if(!country) throw new NotFoundException('Este País no existe');
         const query = { country: new ObjectID(country._id)};
         return await this.heroModel.find(query);
     }
