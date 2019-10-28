@@ -56,8 +56,14 @@ export class HeroController {
                 updateHero
             });
         }
+
     @Get('/country/:name')
-    getHeroesByCountryName(@Param('name') name: string) {
-        console.log('>>>>>>>>>>>>', name);
+    async getHeroesByCountryName(@Res() res, @Param('name') name: string) {
+        const heroes = await this.heroService.getHeroesByCountryName(name);
+        return res.status(HttpStatus.OK).json({
+            message: `Heroes de ${name}`,
+            heroes
+        })
+
     }
 }    
