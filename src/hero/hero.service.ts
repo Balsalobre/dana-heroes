@@ -1,0 +1,34 @@
+import { Injectable } from '@nestjs/common';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Hero } from './interfaces/hero.interface';
+import { CreateHeroDTO } from './dto/hero.dto';
+
+@Injectable()
+export class HeroService {
+    constructor(
+        @InjectModel('Hero') private heroModel: Model<Hero>
+    ) {}
+
+    async getHeroes(): Promise<Hero[]> {
+        const heroes =  await this.heroModel.find().sort('-createdAt').populate({path: 'country'});
+        return heroes;
+    }
+
+    async getHero(heroId: string): Promise<Hero> {
+        return await this.heroModel.findById(heroId).populate({path: 'country'});
+    }
+
+    async createHero(createHeroDTO: CreateHeroDTO): Promise<Hero> {
+        const hero =  new this.heroModel(createHeroDTO);
+        return await hero.save();
+    }
+
+    async deleteHero(heroId: string): Promise<Hero> {
+        return await this.heroModel.findByIdAndDelete(heroId).populate({path: 'country'});
+    }
+
+    async updateHero(heroId: string, createHeroDTO: CreateHeroDTO): Promise<Hero> {
+        return await this.heroModel.findByIdAndUpdate(heroId, createHeroDTO, {new: true}).populate({path: 'country'});
+    }
+}
