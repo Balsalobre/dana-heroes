@@ -1,10 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Res, HttpStatus, Body, Param, NotFoundException, Query} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Res, HttpStatus, Body, Param, NotFoundException, Query, UseGuards, Optional, ValidationPipe} from '@nestjs/common';
 import { CreateHeroDTO } from './dto/hero.dto'
 import { HeroService } from './hero.service';
-import { ApiUseTags } from '@nestjs/swagger';
+import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { QueryPaginateDTO } from './dto/query-paginate.dto';
 
 @ApiUseTags('Heroes')
 @Controller('hero')
+@ApiBearerAuth()
+@UseGuards(AuthGuard())
 export class HeroController {
 
     constructor(private heroService: HeroService){}
@@ -17,10 +21,13 @@ export class HeroController {
             hero
         });
     }
-
+    
     @Get('/')
-    async getHeroes(@Res() res) {
-        const heroes = await this.heroService.getHeroes();
+    async getHeroes(
+        @Res() res,
+        @Query(ValidationPipe) filterQuery: QueryPaginateDTO
+        ) {
+        const heroes = await this.heroService.getHeroes(filterQuery);
         res.status(HttpStatus.OK).json({
             heroes
         });
