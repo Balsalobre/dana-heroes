@@ -5,6 +5,7 @@ import { Hero } from './interfaces/hero.interface';
 import { Country } from '../country/interfaces/country.interface';
 import { CreateHeroDTO } from './dto/hero.dto';
 import { ObjectId, ObjectID } from 'mongodb';
+import { QueryPaginateDTO } from './dto/query-paginate.dto';
 
 @Injectable()
 export class HeroService {
@@ -13,9 +14,15 @@ export class HeroService {
         @InjectModel('Country') private countryModel: Model<Country>
     ) {}
 
-    async getHeroes(): Promise<Hero[]> {
-        const heroes =  await this.heroModel.find().sort('-createdAt').populate({path: 'country'});
-        return heroes;
+    async getHeroes(options: QueryPaginateDTO): Promise<{heroes: Hero[], total: number}> {
+        const { offset, limit } = options;
+        const heroes =  await this.heroModel.find()
+            .skip(+offset)
+            .limit(+limit)
+            .sort('-createdAt')
+            .populate({path: 'country'});
+
+        return {heroes, total: heroes.length};
     }
 
     async getHero(heroId: string): Promise<Hero> {

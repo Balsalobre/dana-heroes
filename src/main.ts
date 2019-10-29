@@ -9,6 +9,7 @@ async function bootstrap() {
     .setTitle('DANA - HEROES')
     .setDescription('Ejemplo de crud con Nestjs y MongoDB')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

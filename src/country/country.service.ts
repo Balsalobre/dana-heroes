@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-
 import { Country } from './interfaces/country.interface';
 import { CreateCountryDTO } from './dto/country.dto';
 
